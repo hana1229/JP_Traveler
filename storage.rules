@@ -1,0 +1,17 @@
+rules_version = '2';
+service firebase.storage {
+  match /b/{bucket}/o {
+    function member() {
+      return request.auth != null && request.auth.token.email_verified == true &&
+        request.auth.token.email in [
+          'DAD_EMAIL_HERE','MOM_EMAIL_HERE','SISTER_EMAIL_HERE','OWNER_EMAIL_HERE'
+        ];
+    }
+    match /trips/fukuoka2026/users/{uid}/{allPaths=**} {
+      allow read: if member() && request.auth.uid == uid;
+      allow write: if member() && request.auth.uid == uid
+        && request.resource.size < 5 * 1024 * 1024
+        && request.resource.contentType.matches('image/.*');
+    }
+  }
+}
