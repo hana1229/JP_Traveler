@@ -1,0 +1,250 @@
+/* Restored v4 hotel and sheet functionality */
+/* v4.0: interaction repairs only. Existing typography, palette, assets & source data retained. */
+
+/* Map covers the entire phone even when the inventory drawer is pulled down. */
+.section-parking .paper-body,
+.section-food .paper-body,
+.section-shop .paper-body{position:relative;height:100%;min-height:0;overflow:hidden;padding:0}
+.explore-page{position:relative;height:100%;min-height:0;display:block;overflow:hidden;isolation:isolate}
+.explore-map{position:absolute;inset:0;width:100%;height:100%;min-height:0;z-index:0;overflow:hidden}
+#place-map{position:absolute;inset:0;height:100%;width:100%}
+.map-hud{z-index:650}
+.places-drawer{
+  position:absolute;left:0;right:0;bottom:0;top:auto;
+  height:56%;min-height:0;max-height:calc(100% - 125px);
+  margin:0;padding:0;
+  z-index:700;border-radius:22px 22px 0 0;
+  background:#fcf7ed;box-shadow:0 -5px 20px #446b603a;
+  display:flex;flex-direction:column;overflow:hidden;
+  transform:translate3d(0,0,0);
+  transition:transform .38s cubic-bezier(.2,.82,.25,1);
+  will-change:transform;
+}
+.places-drawer.is-collapsed{transform:translate3d(0,calc(100% - 44px),0)}
+.drawer-grab{
+  display:flex;flex-direction:column;gap:6px;align-items:center;justify-content:center;
+  flex:0 0 44px;width:100%;min-height:44px;padding:5px 12px;
+  background:linear-gradient(#fffdf3,#f8f0de);border:0;border-bottom:1px solid #ece0ce;
+  color:#8b7765;font-family:var(--body);cursor:grab;
+  touch-action:none;user-select:none;-webkit-user-select:none;
+}
+.drawer-grab:active{cursor:grabbing}
+.drawer-handle{height:5px;width:53px;background:#bba998;border-radius:99px;margin:0;display:block;flex:none}
+.drawer-hint{font-size:10px;line-height:1;letter-spacing:.01em;font-weight:700}
+.drawer-columns{display:grid;grid-template-columns:minmax(0,44fr) minmax(0,56fr);flex:1 1 0;min-height:0;overflow:hidden}
+.drawer-column{display:flex;flex-direction:column;min-width:0;min-height:0;overflow:hidden;background:#fff8e9}
+.chosen-column{border-right:1px solid #e6dbc6}
+.drawer-column-title{
+  display:flex;align-items:center;justify-content:center;gap:4px;
+  min-height:42px;flex:0 0 42px;text-align:center;
+  font-family:var(--title);font-size:14px;line-height:1.05;
+  color:#586e60;background:#d0e6d6;padding:5px 4px;
+}
+.drawer-column-title.active{color:#275947;background:#83c5ad}
+.nearby-count{font:700 10px var(--body);white-space:nowrap}
+/* Card on left contains only the one selected place. Each column scrolls on its own. */
+.selected-place{
+  flex:1 1 0;min-height:0;max-height:none;overflow-y:auto;overflow-x:hidden;
+  -webkit-overflow-scrolling:touch;overscroll-behavior:contain;
+  background:#fff2d7;border:0;border-radius:0;padding:12px 9px 24px;
+  scrollbar-width:thin;touch-action:pan-y;
+}
+.selected-place-head{gap:5px;align-items:flex-start}
+.selected-number{width:20px;height:20px;font-size:12px}
+.selected-place-head strong{font-size:12px;line-height:1.35}
+.selected-place-head small{font-size:9px;line-height:1.4}
+.selected-place .place-primary{font-size:10px;line-height:1.5;margin:9px 0 4px}
+.selected-place .place-muted{font-size:9px;line-height:1.55;margin:6px 0;overflow-wrap:anywhere}
+.selected-place .detail-arrow{padding:3px 5px;font-size:14px;flex:none}
+.selected-place .chosen-links{display:flex;flex-direction:column;align-items:stretch;gap:6px;margin-top:10px}
+.selected-place .chosen-links>*{display:block;font-size:10px;line-height:1.35;text-align:center;padding:8px 5px;white-space:normal}
+.places-other-list{
+  flex:1 1 0;min-height:0;max-height:none;overflow-x:hidden;overflow-y:auto;
+  background:#fff8e9;-webkit-overflow-scrolling:touch;
+  overscroll-behavior:contain;touch-action:pan-y;scrollbar-width:thin;
+}
+.place-list-row{min-height:61px;padding:10px 6px;gap:6px;cursor:pointer}
+.place-list-n{width:21px;height:21px;font-size:10px;flex:none}
+.place-list-text{min-width:0;gap:4px}
+.place-list-text strong{font-size:10.5px;line-height:1.3;white-space:normal;display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;overflow:hidden}
+.place-list-text small{font-size:9px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;line-height:1.45}
+.place-list-chevron{font-size:18px;flex:none}
+.place-list-row:focus-visible{outline:2px solid #77b79e;outline-offset:-2px}
+.section-parking .drawer-column-title{background:#f7d0d0}
+.section-parking .drawer-column-title.active{background:#f36c7c;color:#5b2931}
+.section-food .drawer-column-title{background:#f7d7be}
+.section-food .drawer-column-title.active{background:#ed8967;color:#5b352b}
+.section-shop .drawer-column-title{background:#f7d6e3}
+.section-shop .drawer-column-title.active{background:#f59db5;color:#67364a}
+
+/* Room key: actual transition takes place on the existing DOM instead of a rerender. */
+.hotel-page{overflow:hidden}
+.key-scene{transition:transform .37s cubic-bezier(.35,.04,.22,1),opacity .37s ease;will-change:transform}
+.room-key{
+  transition:top .96s cubic-bezier(.24,.84,.16,1),transform .96s cubic-bezier(.24,.84,.16,1),box-shadow .65s ease;
+  will-change:top,transform;
+}
+.key-sleeve{
+  transition:transform .96s cubic-bezier(.23,.8,.19,1),opacity .86s ease;
+  will-change:transform;
+}
+.key-scene.extracted .room-key{top:12px;transform:translate3d(0,0,0) rotate(-1.1deg);z-index:2;box-shadow:0 12px 22px #57676744}
+.key-scene.extracted .key-sleeve{transform:translate3d(0,284px,0);opacity:.92}
+.key-scene.slide-left{transform:translate3d(-108%,0,0);opacity:.1}
+.key-scene.slide-right{transform:translate3d(108%,0,0);opacity:.1}
+.key-scene.enter-from-right{transition:none;transform:translate3d(108%,0,0);opacity:.1}
+.key-scene.enter-from-left{transition:none;transform:translate3d(-108%,0,0);opacity:.1}
+.key-scene.enter-from-right.arrived,.key-scene.enter-from-left.arrived{
+  transition:transform .42s cubic-bezier(.18,.83,.23,1),opacity .36s ease;
+  transform:translate3d(0,0,0);opacity:1;
+}
+/* Beppu uses its own cool mint / turquoise key sleeve while Fukuoka keeps the pink palette. */
+.hotel-page[data-hotel-theme="beppu"] .key-sleeve{
+ background:linear-gradient(152deg,#bceadd 0%,#86cfc8 68%,#81c6ce 100%);
+ border-color:#80c6bb;box-shadow:0 12px 24px #4f8d8940,inset 0 2px #ffffff96;
+}
+.hotel-page[data-hotel-theme="beppu"] .sleeve-emblem{color:#3f8e84}
+.hotel-page[data-hotel-theme="beppu"] .sleeve-title{color:#315c62}
+.hotel-page[data-hotel-theme="beppu"] .sleeve-meta,
+.hotel-page[data-hotel-theme="beppu"] .sleeve-info b{color:#406a6a}
+.hotel-page[data-hotel-theme="beppu"] .sleeve-info span{color:#5b9291}
+.hotel-page[data-hotel-theme="beppu"] .sleeve-info{border-top-color:#75bcb99a}
+.hotel-page[data-hotel-theme="beppu"] .room-key{background:#8ccfc4}
+.hotel-page[data-hotel-theme="beppu"] .room-key-content{background:#b9e5d9;color:#355961}
+.hotel-page[data-hotel-theme="beppu"] .room-key-parking{color:#466a68}
+.hotel-page[data-hotel-theme="beppu"] .room-key-actions a{background:#f1fbec;color:#37766c}
+.hotel-page[data-hotel-theme="beppu"] .room-key-checks input{accent-color:#67aa99}
+@media(max-width:410px){.places-drawer{height:57%}.drawer-column-title{font-size:13px}.selected-place{padding-left:7px;padding-right:7px}}
+@media(max-height:735px){.places-drawer{height:61%;max-height:calc(100% - 125px)}.explore-map{height:100%;min-height:0}}
+@media(prefers-reduced-motion:reduce){.key-scene,.room-key,.key-sleeve,.places-drawer{transition-duration:.01ms!important}}
+
+/* Retained v5 Tabelog filter + mutually-exclusive tab behavior */
+/* v5: mutually exclusive selection/nearby tabs + Tabelog rating toggle */
+.places-drawer .drawer-content{display:flex;flex-direction:column;flex:1 1 0;min-height:0;overflow:hidden}
+.places-drawer .drawer-tabs{display:grid;grid-template-columns:1fr 1fr;flex:0 0 52px;min-height:52px}
+.places-drawer .drawer-tab{border:0;border-radius:0;cursor:pointer;font-size:15px;min-width:0;display:flex;justify-content:center;align-items:center;gap:5px;padding:7px 8px}
+.places-drawer .drawer-tabs .drawer-tab:focus-visible{outline:3px solid #6e9f8b;outline-offset:-3px}
+.places-drawer .drawer-views{min-height:0;flex:1 1 0;overflow:hidden;position:relative}
+.places-drawer .drawer-view{width:100%;height:100%;min-height:0;overflow:hidden;background:#fff8e9}
+.places-drawer .drawer-view[hidden]{display:none!important}
+.places-drawer .drawer-view-selected{background:#fff2d7}
+.places-drawer .selected-place{width:100%;height:100%;box-sizing:border-box;padding:17px 17px 34px;overflow-y:auto}
+.places-drawer .selected-place-head strong{font-size:17px;line-height:1.32}
+.places-drawer .selected-place-head small{font-size:12px}
+.places-drawer .selected-number{width:27px;height:27px;font-size:15px}
+.places-drawer .selected-place .place-primary{font-size:13px;margin:14px 0 6px}
+.places-drawer .selected-place .place-muted{font-size:12px;line-height:1.6;margin:8px 0}
+.places-drawer .selected-place .chosen-links{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-top:17px}
+.places-drawer .selected-place .chosen-links>*{font-size:12px;min-height:35px;box-sizing:border-box}
+.places-drawer .selected-place .chosen-links>:last-child{grid-column:1 / -1}
+.places-drawer .places-other-list{height:100%;width:100%;overflow-y:auto;overscroll-behavior:contain;-webkit-overflow-scrolling:touch;touch-action:pan-y}
+.places-drawer .place-list-row{padding:12px 15px;min-height:67px;gap:11px}
+.places-drawer .place-list-n{width:27px;height:27px;font-size:12px}
+.places-drawer .place-list-text strong{font-size:13px}
+.places-drawer .place-list-text small{font-size:11px}
+.places-drawer .place-list-chevron{font-size:23px}
+.map-filters .tabelog-filter{flex:none;white-space:nowrap;pointer-events:auto;border:1px solid #d3e1c7;background:#fff9e9f2;border-radius:20px;padding:7px 12px;font:700 11px var(--body);color:#665345;box-shadow:0 2px 5px #5f6b4a20;cursor:pointer}
+.map-filters .tabelog-filter.active{background:#ed8967;color:#fffdf4;border-color:#d87555;box-shadow:inset 0 0 0 1px #ffffff55,0 2px 5px #7d432c30}
+.map-filters .tabelog-filter:focus-visible{outline:3px solid #b4745b;outline-offset:2px}
+@media(max-width:410px){.places-drawer .drawer-tab{font-size:14px}.places-drawer .selected-place{padding:12px 12px 25px}.places-drawer .selected-place-head strong{font-size:15px}}
+
+
+/* v6 PLACE PANEL REPAIR: self-contained. No dependency on v4/v5 files.
+   Restore category colors, rounded design and real mobile bottom sheet. */
+.section-parking .places-drawer,.section-food .places-drawer,.section-shop .places-drawer{
+  position:absolute;z-index:700;left:0;right:0;bottom:0;top:auto;
+  height:56%;min-height:0;max-height:calc(100% - 125px);
+  padding:0;margin:0;border:0;border-radius:24px 24px 0 0;
+  background:#fcf7ed;box-shadow:0 -5px 20px #446b603a;
+  display:flex;flex-direction:column;overflow:hidden;
+  transform:translate3d(0,0,0);
+  transition:transform .4s cubic-bezier(.18,.84,.24,1);
+  will-change:transform;
+}
+.places-drawer.is-collapsed{transform:translate3d(0,calc(100% - 46px),0)}
+.places-drawer .drawer-grab{
+  appearance:none;-webkit-appearance:none;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  flex:0 0 46px;min-height:46px;width:100%;gap:5px;
+  margin:0;padding:5px 12px;
+  border:0;border-bottom:1px solid #e9dfcf;border-radius:0;
+  background:linear-gradient(180deg,#fffdf5,#fcf7ed);
+  color:#8b7765;box-shadow:none;
+  font-family:var(--body);font-size:11px;
+  touch-action:none;user-select:none;-webkit-user-select:none;
+  cursor:grab;
+}
+.places-drawer .drawer-grab:active{cursor:grabbing}
+.places-drawer .drawer-grab .drawer-handle{
+  display:block;flex:none;width:54px;height:5px;margin:0;
+  border-radius:99px;background:#bba998;
+}
+.places-drawer .drawer-grab .drawer-hint{font-family:var(--body);font-size:10px;font-weight:700;line-height:1.2;color:#8a7663;white-space:nowrap}
+.places-drawer .drawer-content{display:flex;flex-direction:column;flex:1 1 0;min-height:0;overflow:hidden}
+.places-drawer .drawer-tabs{
+  display:grid;grid-template-columns:1fr 1fr;gap:0;
+  width:100%;margin:0;padding:0;flex:0 0 52px;min-height:52px;
+  border-radius:0;overflow:hidden;
+}
+.places-drawer .drawer-tabs .drawer-tab{
+  appearance:none;-webkit-appearance:none;
+  border:0;border-radius:0;box-shadow:none;
+  display:flex;align-items:center;justify-content:center;gap:5px;
+  min-width:0;min-height:52px;margin:0;padding:6px 8px;
+  font-family:var(--title);font-size:15px;font-weight:400;line-height:1.2;
+  color:#645247;cursor:pointer;
+  transition:background-color .17s ease,color .17s ease;
+}
+/* Category-specific soft inactive color, never system gray. */
+.section-parking .places-drawer .drawer-tabs .drawer-tab:not(.active){background:#f7d0d0;color:#806057}
+.section-parking .places-drawer .drawer-tabs .drawer-tab.active{background:#f36c7c;color:#562e38}
+.section-food .places-drawer .drawer-tabs .drawer-tab:not(.active){background:#f7d7be;color:#84634c}
+.section-food .places-drawer .drawer-tabs .drawer-tab.active{background:#ed8967;color:#5b352b}
+.section-shop .places-drawer .drawer-tabs .drawer-tab:not(.active){background:#f7d6e3;color:#885a66}
+.section-shop .places-drawer .drawer-tabs .drawer-tab.active{background:#f59db5;color:#67364a}
+.places-drawer .drawer-tabs .drawer-tab:focus-visible{outline:3px solid #6e9f8b;outline-offset:-3px}
+.places-drawer .drawer-tab .nearby-count{font:700 11px var(--body);white-space:nowrap}
+.places-drawer .drawer-views{flex:1 1 0;min-height:0;position:relative;overflow:hidden;background:#fff9ec}
+.places-drawer .drawer-view{width:100%;height:100%;min-height:0;background:#fff9ec;overflow:hidden}
+.places-drawer .drawer-view[hidden]{display:none!important}
+.places-drawer .drawer-view-selected{overflow-y:auto;-webkit-overflow-scrolling:touch;overscroll-behavior:contain;touch-action:pan-y;padding:12px}
+.places-drawer .selected-place{
+  display:block;width:100%;height:auto;max-height:none;min-height:0;
+  padding:14px 14px 18px;margin:0;
+  background:#fff2d7;border:1px solid #ead9b9;border-radius:16px;
+  box-shadow:0 2px 0 #eadac1;overflow:visible;
+}
+.places-drawer .selected-place-head{display:flex;align-items:flex-start;gap:8px}
+.places-drawer .selected-place-head strong{font-size:16px;line-height:1.35}
+.places-drawer .selected-place-head small{font-size:11px}
+.places-drawer .selected-number{width:26px;height:26px;font-size:14px}
+.places-drawer .selected-place .place-primary{font-size:12px;line-height:1.55;margin:12px 0 6px}
+.places-drawer .selected-place .place-muted{font-size:11px;line-height:1.6;margin:7px 0;overflow-wrap:anywhere}
+.places-drawer .selected-place .chosen-links{display:flex;flex-wrap:wrap;gap:7px;margin-top:14px}
+.places-drawer .selected-place .chosen-links>*{flex:1 1 80px;min-height:35px;box-sizing:border-box;text-align:center;font-size:11px;padding:9px 7px;display:flex;align-items:center;justify-content:center;border-radius:10px;border:1px solid #e5d7bd;background:#fffaf0;color:#6d6254;text-decoration:none}
+.places-drawer .places-other-list{width:100%;height:100%;min-height:0;overflow-x:hidden;overflow-y:auto;overscroll-behavior:contain;-webkit-overflow-scrolling:touch;touch-action:pan-y;scrollbar-width:thin;background:#fff9ec}
+.places-drawer .place-list-row{
+  appearance:none;-webkit-appearance:none;display:flex;align-items:center;gap:11px;
+  width:100%;min-height:62px;padding:12px 14px;
+  background:transparent;border:0;border-bottom:1px dashed #e3d5be;
+  border-radius:0;color:#655547;text-align:left;cursor:pointer;
+}
+.places-drawer .place-list-row:active{background:#eaf1df}
+.places-drawer .place-list-row:focus-visible{outline:2px solid #77b79e;outline-offset:-2px}
+.places-drawer .place-list-n{width:25px;height:25px;font-size:12px;background:#e2e2c7;color:#786f55}
+.places-drawer .place-list-text{min-width:0;flex:1}
+.places-drawer .place-list-text strong{font-size:13px;line-height:1.35;overflow-wrap:anywhere;white-space:normal;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.places-drawer .place-list-text small{font-size:11px;line-height:1.45}
+.places-drawer .place-list-chevron{font-size:22px;color:#a89980}
+/* Food Tabelog toggle remains as previously specified. */
+@media(max-width:410px){
+  .places-drawer .drawer-tabs .drawer-tab{font-size:14px;padding:6px 3px}
+  .places-drawer .drawer-view-selected{padding:10px}
+  .places-drawer .selected-place{padding:12px}
+  .places-drawer .selected-place-head strong{font-size:15px}
+}
+@media(prefers-reduced-motion:reduce){.places-drawer{transition-duration:.01ms}}
+
+/* Keep the old compact action-pill treatment, not tall rectangular buttons. */
+.places-drawer .selected-place .chosen-links{flex-direction:row;align-items:center;gap:7px}
+.places-drawer .selected-place .chosen-links>*{flex:1 1 72px;min-width:0;min-height:35px;max-height:42px;padding:8px 3px;font-size:10px;line-height:1.2;box-shadow:none}
