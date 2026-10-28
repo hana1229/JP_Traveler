@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="660" height="520" viewBox="0 0 330 260">
+<rect width="330" height="260" fill="#90cbd6"/>
+<!-- illustration of northern Kyushu, stylized route geometry, not road navigation -->
+<path d="M0 72 Q32 46 62 64 Q87 37 119 59 Q144 58 165 43 Q199 25 226 43 Q253 45 271 68 Q294 76 330 69L330 260H0Z" fill="#d1e6b5"/>
+<path d="M0 77Q32 51 62 69Q87 42 119 64Q144 64 165 48Q199 30 226 48Q253 50 271 73Q294 81 330 74" fill="none" stroke="#eaf5db" stroke-width="4"/>
+<path d="M-10 232Q56 210 96 221T185 220Q239 229 330 208" fill="none" stroke="#9fcdaf" stroke-width="32"/>
+<!-- pastel mountains of inland Yufuin region -->
+<path d="M70 155l48 -75 39 75z" fill="#a9ce9d"/><path d="M122 180l52 -90 48 90z" fill="#9fc998"/><path d="M194 195l39 -70 48 70z" fill="#b4d5a3"/>
+<path d="M101 107l17 -27 15 27z" fill="#f6efcf"/><path d="M155 120l19 -30 16 30z" fill="#f6efcf"/>
+<!-- road from fukuoka to yufuin to beppu -->
+<path d="M-12 93Q41 100 80 128T167 158Q195 167 236 185T343 164" fill="none" stroke="#fcf4d9" stroke-width="20" stroke-linecap="round"/>
+<path d="M-12 93Q41 100 80 128T167 158Q195 167 236 185T343 164" fill="none" stroke="#decb9e" stroke-width="2" stroke-dasharray="5 10"/>
+<g fill="#7ab88a"><circle cx="41" cy="171" r="14"/><circle cx="57" cy="175" r="10"/><circle cx="293" cy="125" r="18"/><circle cx="312" cy="128" r="12"/><circle cx="263" cy="236" r="10"/><circle cx="280" cy="231" r="14"/></g>
+<g fill="#f9dfa9"><path d="M24 113l13 -13 12 13v15H24z"/><path d="M235 186l14 -12 14 12v18h-28z"/></g>
+<g fill="#f4b6a1"><circle cx="96" cy="203" r="4"/><circle cx="110" cy="211" r="4"/><circle cx="121" cy="202" r="4"/></g>
+</svg>
